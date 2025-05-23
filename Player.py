@@ -15,6 +15,8 @@ class Player:
     life = 0
     style = 1
     time = 10
+    wins = 0
+    losses = 0
     def __init__(self, name):
         self.name = name
     def __init__(self, name, skill, life, style, time, elo):
@@ -36,4 +38,4 @@ class Player:
         elif life > 0.1:
             lifeS = "good."
         
-        return f"{self.name} has an elo of ({self.elo}) with a skill of ({self.skill}).\nThey are willing to spent {floor(self.time)} hours on gaming and their life situation is {lifeS}"
+        return f"{self.name} has an elo of ({self.elo}) with a skill of ({self.skill}).\nThey have won {self.wins} games and lost {self.losses}.\nThey are willing to spend {floor(self.time)} hours on gaming a day and their life situation is {lifeS}"
