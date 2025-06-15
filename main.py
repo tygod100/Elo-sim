@@ -35,6 +35,8 @@ def genPlayer():
 a = 400
 b = 10
 k = 36
+winsTillNotNew = 5 #how maybe wins till the player is not considered a noob
+noobK = 100
 
 def playAGame(player1, player2):
     probs = player1.skill + player2.skill
@@ -50,6 +52,11 @@ def playAGame(player1, player2):
     eloA = eloA/odd1
     
     eloStake = 0
+    
+    kFactor = k
+    
+    if player1.isNew(winsTillNotNew) or player2.isNew(winsTillNotNew):
+        kFactor = noobK
 
     if (winer < player1.skill.real):
         winner = player1.name
@@ -81,8 +88,8 @@ def playAGame(player1, player2):
 def passDay():
     for i in range(len(players)):
         curSkill = players[i].skill
-        players[i].skill += calculate.skillGain(curSkill, skillCeiling) * playerTimes[players[i].name]
         players[i].skill -= calculate.skillLoss(curSkill, skillCeiling)
+        players[i].skill += calculate.skillGain(curSkill, skillCeiling) * playerTimes[players[i].name]
         players[i].skill = players[i].skill.real
     for i in playerTimes.keys():
         playerTimes[i] = 0
@@ -98,7 +105,10 @@ startingPlayerCount = eval(input ("How many starting players: ")) - 1
 if startingPlayerCount <= 0: startingPlayerCount = 1
 
 skillCeiling =  eval(input ("Skill growth: "))
-k =  eval(input ("K facter or calculating elo: "))
+k = eval(input ("K facter or calculating elo: "))
+
+noobK = eval(input ("K facter for noobs: "))
+winsTillNotNew = eval(input ("Wins till your not considered a noob: "))
 
 #
 for i in range(startingPlayerCount):
@@ -111,6 +121,9 @@ for i in range(startingPlayerCount):
 while True:
     gamesPlayed = 0
     eloATotal = 0
+    
+    actualTotal = 0
+    forecastTotal = 0
     
     newPlayer = genPlayer()
     newPlayerName = newPlayer.name
@@ -128,6 +141,11 @@ while True:
             player2 = random.choice(players)
 
         eloATotal += playAGame(player1, player2)
+        
+        #forcast to thing
+        forecastTotal += calculate.calcByElo(player1.elo, player2.elo)
+        actualTotal += calculate.calcBySkill(player1.skill, player2.skill)
+        
         gamesPlayed += 1
     
     print('-'*8)
@@ -150,5 +168,7 @@ while True:
         if count > 0: print (f"There are {count} players who play for {i} hours a day, on average they have a skill of {totalSkill/count} and an elo of {totalElo/count}.")
     print('-'*8)
     print (newPlayerName + " started playing for the first time!")
-    input( f"{gamesPlayed} games were played today. Elo was accurate {(eloATotal/gamesPlayed) * 100}% of the time")
+    
+    # Elo was accurate {(eloATotal/gamesPlayed)  * 100}% of the time"
+    input( f"{gamesPlayed} games were played today.\n Elo was {calculate.PercentError(forecastTotal, actualTotal) * 100}% accurate. Or {(eloATotal/gamesPlayed)  * 100}% of the time")
     passDay()

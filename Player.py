@@ -17,6 +17,9 @@ class Player:
     time = 10
     wins = 0
     losses = 0
+    def isNew(self, WinsTillNotNew = 0): # returns true if player has not won more games. to incresn k factor for new players
+        return self.wins > 1 + WinsTillNotNew
+        
     def __init__(self, name):
         self.name = name
     def __init__(self, name, skill, life, style, time, elo):
